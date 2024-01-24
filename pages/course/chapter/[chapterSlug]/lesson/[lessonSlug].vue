@@ -1,6 +1,62 @@
 <template>
   <h2>Lesson</h2>
   <p>This is a lesson</p>
-  <p>Chapter slug: {{ $route.params.chapterSlug }}</p>
-  <p>Lesson slug: {{ $route.params.lessonSlug }}</p>
+  <p>{{ chapter.title }}</p>
+  <p>{{ lesson.title }}</p>
+  <VideoPlayer v-if="lesson.videoId" :videoId="lesson.videoId" />
+  <p>{{ lesson.text }}</p>
+  <ClientOnly>
+    <LessonCompleteButton
+      :model-value="isLessonCompleted"
+      @update:model-value="toggleComplete"
+    />
+  </ClientOnly>
 </template>
+
+<script setup>
+const course = useCourse();
+const route = useRoute();
+
+const chapter = computed(() => {
+  return course.chapters.find(
+    (chapter) => chapter.slug === route.params.chapterSlug
+  );
+});
+
+const lesson = computed(() => {
+  return chapter.value.lessons.find(
+    (lesson) => lesson.slug === route.params.lessonSlug
+  );
+});
+
+const title = computed(() => {
+  return `${lesson.value.title} - ${course.title}`;
+});
+
+useHead({
+  title: title,
+});
+
+const progress = useLocalStorage("progress", []);
+
+const isLessonCompleted = computed(() => {
+  if (!progress.value[chapter.value.number - 1]) {
+    return false;
+  }
+
+  if (!progress.value[chapter.value.number - 1][lesson.value.number - 1]) {
+    return false;
+  }
+
+  return progress.value[chapter.value.number - 1][lesson.value.number - 1];
+});
+
+const toggleComplete = () => {
+  if (!progress.value[chapter.value.number - 1]) {
+    progress.value[chapter.value.number - 1] = [];
+  }
+
+  progress.value[chapter.value.number - 1][lesson.value.number - 1] =
+    !isLessonCompleted.value;
+};
+</script>
