@@ -1,16 +1,18 @@
 <template>
-  <h2>Lesson</h2>
-  <p>This is a lesson</p>
-  <p>{{ chapter.title }}</p>
-  <p>{{ lesson.title }}</p>
-  <VideoPlayer v-if="lesson.videoId" :videoId="lesson.videoId" />
-  <p>{{ lesson.text }}</p>
-  <ClientOnly>
-    <LessonCompleteButton
-      :model-value="isLessonCompleted"
-      @update:model-value="toggleComplete"
-    />
-  </ClientOnly>
+  <div>
+    <p class="mt-0 uppercase font-bold text-slate-400 mb-1">
+      Lesson {{ chapter.number }} - {{ lesson.number }}
+    </p>
+    <p>{{ lesson.title }}</p>
+    <VideoPlayer v-if="lesson.videoId" :videoId="lesson.videoId" />
+    <p>{{ lesson.text }}</p>
+    <ClientOnly>
+      <LessonCompleteButton
+        :model-value="isLessonCompleted"
+        @update:model-value="toggleComplete"
+      />
+    </ClientOnly>
+  </div>
 </template>
 
 <script setup>
